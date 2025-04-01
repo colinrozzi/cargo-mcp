@@ -191,9 +191,22 @@ server.tool(
     lib: z.boolean().default(false).describe('Create a library project'),
   },
   async ({ path, bin, lib }: { path: string, bin: boolean, lib: boolean }) => {
-    const args: string[] = [];
-    if (bin) args.push('--bin');
-    if (lib) args.push('--lib');
+    const args: string[] = ['--force']; // Add force flag to prevent prompts
+    
+    // Handle conflicting options
+    if (bin && lib) {
+      return {
+        content: [{ type: 'text', text: 'Error: Cannot specify both --bin and --lib' }],
+      };
+    }
+    
+    // Default to bin if neither is specified
+    if (!bin && !lib) {
+      args.push('--bin');
+    } else {
+      if (bin) args.push('--bin');
+      if (lib) args.push('--lib');
+    }
     
     const result = await runCargoCommand('init', args, path);
     const formattedResult = formatCommandResult(result);
