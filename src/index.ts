@@ -179,44 +179,6 @@ server.tool(
   }
 );
 
-// Add cargo init tool
-server.tool(
-  'init',
-  `Creates a new Rust project with a Cargo.toml file.
-  This command initializes a new Rust project in the specified directory.
-  Use the --bin flag to create a binary project, or --lib to create a library project.`,
-  {
-    path: z.string().describe('Path to the directory where the project will be created'),
-    bin: z.boolean().default(false).describe('Create a binary project'),
-    lib: z.boolean().default(false).describe('Create a library project'),
-  },
-  async ({ path, bin, lib }: { path: string, bin: boolean, lib: boolean }) => {
-    const args: string[] = ['--force']; // Add force flag to prevent prompts
-    
-    // Handle conflicting options
-    if (bin && lib) {
-      return {
-        content: [{ type: 'text', text: 'Error: Cannot specify both --bin and --lib' }],
-      };
-    }
-    
-    // Default to bin if neither is specified
-    if (!bin && !lib) {
-      args.push('--bin');
-    } else {
-      if (bin) args.push('--bin');
-      if (lib) args.push('--lib');
-    }
-    
-    const result = await runCargoCommand('init', args, path);
-    const formattedResult = formatCommandResult(result);
-    
-    return {
-      content: [{ type: 'text', text: formattedResult }],
-    };
-  }
-);
-
 // Add cargo add tool
 server.tool(
   'add',
