@@ -3,13 +3,6 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { z } from 'zod';
 import { runCargoCommand, formatCommandResult } from './cargo.js';
 
-// Define schemas for common parameters
-const commonParams = {
-  path: z.string().describe('Path to the Rust project directory'),
-  release: z.boolean().default(false).describe('Build in release mode'),
-  verbose: z.boolean().default(false).describe('Use verbose output'),
-};
-
 // Create the MCP server
 const server = new McpServer({
   name: 'Cargo-MCP',
@@ -25,11 +18,20 @@ function getCommonArgs(params: { release?: boolean; verbose?: boolean }) {
   return args;
 }
 
+// Define schemas for common parameters
+const commonParams = {
+  path: z.string().describe('Path to the Rust project directory'),
+  release: z.boolean().default(false).describe('Build in release mode'),
+  verbose: z.boolean().default(false).describe('Use verbose output'),
+};
+
 // Add cargo build tool
 server.tool(
   'build',
   {
-    ...commonParams,
+    path: z.string().describe('Path to the Rust project directory'),
+    release: z.boolean().default(false).describe('Build in release mode'),
+    verbose: z.boolean().default(false).describe('Use verbose output'),
     target: z.string().optional().describe('Target triple to build for'),
     features: z.array(z.string()).optional().describe('Features to enable'),
   },
@@ -60,7 +62,9 @@ server.tool(
 server.tool(
   'run',
   {
-    ...commonParams,
+    path: z.string().describe('Path to the Rust project directory'),
+    release: z.boolean().default(false).describe('Build in release mode'),
+    verbose: z.boolean().default(false).describe('Use verbose output'),
     args: z.array(z.string()).default([]).describe('Arguments to pass to the binary'),
   },
   async ({ path, release, verbose, args }) => {
@@ -88,7 +92,9 @@ server.tool(
 server.tool(
   'test',
   {
-    ...commonParams,
+    path: z.string().describe('Path to the Rust project directory'),
+    release: z.boolean().default(false).describe('Build in release mode'),
+    verbose: z.boolean().default(false).describe('Use verbose output'),
     testName: z.string().optional().describe('Name of the test to run'),
     noCapture: z.boolean().default(false).describe('Show output of tests'),
   },
@@ -118,7 +124,9 @@ server.tool(
 server.tool(
   'check',
   {
-    ...commonParams,
+    path: z.string().describe('Path to the Rust project directory'),
+    release: z.boolean().default(false).describe('Build in release mode'),
+    verbose: z.boolean().default(false).describe('Use verbose output'),
   },
   async ({ path, release, verbose }) => {
     const args = getCommonArgs({ release, verbose });
@@ -165,7 +173,9 @@ server.tool(
 server.tool(
   'clippy',
   {
-    ...commonParams,
+    path: z.string().describe('Path to the Rust project directory'),
+    release: z.boolean().default(false).describe('Build in release mode'),
+    verbose: z.boolean().default(false).describe('Use verbose output'),
     fix: z.boolean().default(false).describe('Automatically apply lint suggestions'),
   },
   async ({ path, release, verbose, fix }) => {
