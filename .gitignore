@@ -1,0 +1,23 @@
+# Node.js dependencies
+node_modules/
+
+# TypeScript output
+dist/
+
+# Environment variables
+.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
