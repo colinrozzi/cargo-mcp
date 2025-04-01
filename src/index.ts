@@ -179,6 +179,31 @@ server.tool(
   }
 );
 
+// Add cargo init tool
+server.tool(
+  'init',
+  `Creates a new Rust project with a Cargo.toml file.
+  This command initializes a new Rust project in the specified directory.
+  Use the --bin flag to create a binary project, or --lib to create a library project.`,
+  {
+    path: z.string().describe('Path to the directory where the project will be created'),
+    bin: z.boolean().default(false).describe('Create a binary project'),
+    lib: z.boolean().default(false).describe('Create a library project'),
+  },
+  async ({ path, bin, lib }: { path: string, bin: boolean, lib: boolean }) => {
+    const args: string[] = [];
+    if (bin) args.push('--bin');
+    if (lib) args.push('--lib');
+    
+    const result = await runCargoCommand('init', args, path);
+    const formattedResult = formatCommandResult(result);
+    
+    return {
+      content: [{ type: 'text', text: formattedResult }],
+    };
+  }
+);
+
 // Add cargo add tool
 server.tool(
   'add',
@@ -260,6 +285,31 @@ server.tool(
   },
   async ({ path }: { path: string }) => {
     const result = await runCargoCommand('clean', [], path);
+    const formattedResult = formatCommandResult(result);
+    
+    return {
+      content: [{ type: 'text', text: formattedResult }],
+    };
+  }
+);
+
+// Add cargo update tool
+server.tool(
+  'update',
+  `Updates dependencies in a Rust project's Cargo.toml file.
+  This command updates all dependencies in the project to their latest versions.
+  Use the --precise flag to specify a version to update to.
+
+  Note: This command updates all dependencies in the project, including those that are not specified in the command.`,
+  {
+    path: z.string().describe('Path to the Rust project directory'),
+    precise: z.string().optional().describe('Update to a specific version'),
+  },
+  async ({ path, precise }: { path: string, precise?: string }) => {
+    const args: string[] = [];
+    if (precise) args.push(`--precise=${precise}`);
+    
+    const result = await runCargoCommand('update', args, path);
     const formattedResult = formatCommandResult(result);
     
     return {
