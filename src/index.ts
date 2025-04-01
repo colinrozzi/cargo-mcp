@@ -5,9 +5,9 @@ import { runCargoCommand, formatCommandResult } from './cargo.js';
 
 // Define schemas for common parameters
 const commonParams = {
-  cwd: z.string().default(process.cwd()),
-  release: z.boolean().default(false),
-  verbose: z.boolean().default(false),
+  path: z.string().describe('Path to the Rust project directory'),
+  release: z.boolean().default(false).describe('Build in release mode'),
+  verbose: z.boolean().default(false).describe('Use verbose output'),
 };
 
 // Create the MCP server
@@ -30,10 +30,10 @@ server.tool(
   'build',
   {
     ...commonParams,
-    target: z.string().optional(),
-    features: z.array(z.string()).optional(),
+    target: z.string().optional().describe('Target triple to build for'),
+    features: z.array(z.string()).optional().describe('Features to enable'),
   },
-  async ({ cwd, release, verbose, target, features }) => {
+  async ({ path, release, verbose, target, features }) => {
     let args = getCommonArgs({ release, verbose });
     
     if (target) args = [...args, '--target', target];
@@ -41,7 +41,7 @@ server.tool(
       args = [...args, '--features', features.join(',')];
     }
     
-    const result = await runCargoCommand('build', args, cwd);
+    const result = await runCargoCommand('build', args, path);
     const formattedResult = formatCommandResult(result);
     
     return {
@@ -55,15 +55,15 @@ server.tool(
   'run',
   {
     ...commonParams,
-    args: z.array(z.string()).default([]),
+    args: z.array(z.string()).default([]).describe('Arguments to pass to the binary'),
   },
-  async ({ cwd, release, verbose, args }) => {
+  async ({ path, release, verbose, args }) => {
     let commandArgs = getCommonArgs({ release, verbose });
     if (args.length > 0) {
       commandArgs = [...commandArgs, '--', ...args];
     }
     
-    const result = await runCargoCommand('run', commandArgs, cwd);
+    const result = await runCargoCommand('run', commandArgs, path);
     const formattedResult = formatCommandResult(result);
     
     return {
@@ -77,16 +77,16 @@ server.tool(
   'test',
   {
     ...commonParams,
-    testName: z.string().optional(),
-    noCapture: z.boolean().default(false),
+    testName: z.string().optional().describe('Name of the test to run'),
+    noCapture: z.boolean().default(false).describe('Show output of tests'),
   },
-  async ({ cwd, release, verbose, testName, noCapture }) => {
+  async ({ path, release, verbose, testName, noCapture }) => {
     let args = getCommonArgs({ release, verbose });
     
     if (testName) args.push(testName);
     if (noCapture) args.push('--nocapture');
     
-    const result = await runCargoCommand('test', args, cwd);
+    const result = await runCargoCommand('test', args, path);
     const formattedResult = formatCommandResult(result);
     
     return {
@@ -101,9 +101,9 @@ server.tool(
   {
     ...commonParams,
   },
-  async ({ cwd, release, verbose }) => {
+  async ({ path, release, verbose }) => {
     const args = getCommonArgs({ release, verbose });
-    const result = await runCargoCommand('check', args, cwd);
+    const result = await runCargoCommand('check', args, path);
     const formattedResult = formatCommandResult(result);
     
     return {
@@ -116,12 +116,12 @@ server.tool(
 server.tool(
   'fmt',
   {
-    cwd: z.string().default(process.cwd()),
-    check: z.boolean().default(false),
+    path: z.string().describe('Path to the Rust project directory'),
+    check: z.boolean().default(false).describe('Check if formatting is correct without modifying files'),
   },
-  async ({ cwd, check }) => {
+  async ({ path, check }) => {
     const args = check ? ['--check'] : [];
-    const result = await runCargoCommand('fmt', args, cwd);
+    const result = await runCargoCommand('fmt', args, path);
     const formattedResult = formatCommandResult(result);
     
     return {
@@ -135,13 +135,13 @@ server.tool(
   'clippy',
   {
     ...commonParams,
-    fix: z.boolean().default(false),
+    fix: z.boolean().default(false).describe('Automatically apply lint suggestions'),
   },
-  async ({ cwd, release, verbose, fix }) => {
+  async ({ path, release, verbose, fix }) => {
     let args = getCommonArgs({ release, verbose });
     if (fix) args.push('--fix');
     
-    const result = await runCargoCommand('clippy', args, cwd);
+    const result = await runCargoCommand('clippy', args, path);
     const formattedResult = formatCommandResult(result);
     
     return {
@@ -154,15 +154,15 @@ server.tool(
 server.tool(
   'add',
   {
-    cwd: z.string().default(process.cwd()),
-    dependencies: z.array(z.string()),
-    dev: z.boolean().default(false),
+    path: z.string().describe('Path to the Rust project directory'),
+    dependencies: z.array(z.string()).describe('Dependencies to add'),
+    dev: z.boolean().default(false).describe('Add as development dependency'),
   },
-  async ({ cwd, dependencies, dev }) => {
+  async ({ path, dependencies, dev }) => {
     const args = [...dependencies];
     if (dev) args.unshift('--dev');
     
-    const result = await runCargoCommand('add', args, cwd);
+    const result = await runCargoCommand('add', args, path);
     const formattedResult = formatCommandResult(result);
     
     return {

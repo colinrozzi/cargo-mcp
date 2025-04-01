@@ -10,17 +10,17 @@ export interface CommandResult {
  * Execute a Cargo command in the specified directory
  * @param command The cargo subcommand (e.g., 'build', 'run')
  * @param args Additional arguments to pass to the command
- * @param cwd Working directory for the command
+ * @param path Path to the Rust project directory
  * @returns Promise with command result
  */
 export async function runCargoCommand(
   command: string,
   args: string[] = [],
-  cwd: string
+  path: string
 ): Promise<CommandResult> {
   return new Promise((resolve) => {
     const fullArgs = [command, ...args];
-    const process = spawn('cargo', fullArgs, { cwd });
+    const process = spawn('cargo', fullArgs, { cwd: path });
     
     let stdout = '';
     let stderr = '';

@@ -14,6 +14,16 @@ The following Cargo commands are available through this MCP server:
 - `clippy`: Run the Rust linter
 - `add`: Add a dependency to a Rust project
 
+## Required Parameters
+
+All commands require a `path` parameter that specifies the path to the Rust project directory. For example:
+
+```json
+{
+  "path": "/path/to/your/rust/project"
+}
+```
+
 ## Installation
 
 ```bash
@@ -46,9 +56,31 @@ To use this server with Claude through the Model Context Protocol:
 1. Start the server
 2. Connect to it from your MCP client (like Claude Desktop)
 3. Once connected, you can ask questions like:
-   - "Can you run the tests for this Rust project?"
-   - "Build this project in release mode"
-   - "Run cargo clippy on this code and show me any warnings"
+   - "Can you run the tests for the Rust project at /path/to/project?"
+   - "Build the Rust project at /path/to/project in release mode"
+   - "Run cargo clippy on the code at /path/to/project and show me any warnings"
+
+When using the tools, Claude will need to specify the project path explicitly:
+
+```json
+// Example of calling the 'build' tool
+{
+  "name": "build",
+  "arguments": {
+    "path": "/path/to/rust/project",
+    "release": true
+  }
+}
+
+// Example of calling the 'test' tool
+{
+  "name": "test",
+  "arguments": {
+    "path": "/path/to/rust/project",
+    "noCapture": true
+  }
+}
+```
 
 ## Development
 
