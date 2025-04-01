@@ -1,0 +1,7 @@
+
+    "cargo": {
+      "command": "/Users/colinrozzi/.config/nvm/versions/node/v23.2.0/bin/node",
+      "args": [
+        "/Users/colinrozzi/work/mcp-servers/cargo-mcp/dist/index.js"
+      ]
+    }
