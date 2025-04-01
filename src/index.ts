@@ -47,6 +47,12 @@ server.tool(
     return {
       content: [{ type: 'text', text: formattedResult }],
     };
+  },
+  {
+    description: `Compiles the current Rust project. 
+    This command is used to build a Rust package and all of its dependencies. 
+    If the build is successful, the compiled artifacts are placed in the 'target/debug' directory (or 'target/release' if built with --release).
+    Use this tool when you need to compile a Rust project without running it.`
   }
 );
 
@@ -69,6 +75,12 @@ server.tool(
     return {
       content: [{ type: 'text', text: formattedResult }],
     };
+  },
+  {
+    description: `Compiles and runs the current Rust project.
+    This command builds the project and then immediately executes the resulting binary.
+    Any additional arguments after '--' are passed to the binary when it's run.
+    Use this tool when you want to build and execute a Rust project in one step.`
   }
 );
 
@@ -92,6 +104,13 @@ server.tool(
     return {
       content: [{ type: 'text', text: formattedResult }],
     };
+  },
+  {
+    description: `Runs the test suite of the current Rust project.
+    This command compiles and runs all tests in the project, including documentation tests.
+    You can specify a specific test to run by providing its name, or run all tests by default.
+    The --nocapture flag shows the output (println! statements) from the tests even if they pass.
+    Use this tool when you want to verify that the code is working correctly through its test suite.`
   }
 );
 
@@ -109,6 +128,12 @@ server.tool(
     return {
       content: [{ type: 'text', text: formattedResult }],
     };
+  },
+  {
+    description: `Checks a Rust project for errors without building it.
+    This command is significantly faster than 'cargo build' because it skips the code generation steps.
+    It performs all the compilation, analysis, and linting checks but doesn't produce an executable.
+    Use this tool for a quick verification that code compiles without errors when you don't need the compiled output.`
   }
 );
 
@@ -127,6 +152,12 @@ server.tool(
     return {
       content: [{ type: 'text', text: formattedResult }],
     };
+  },
+  {
+    description: `Formats Rust source code according to the official style guidelines.
+    This command uses rustfmt to automatically format all code in the project.
+    When run with the --check option, it reports formatting errors without modifying files.
+    Use this tool to ensure code follows consistent Rust style conventions.`
   }
 );
 
@@ -147,6 +178,13 @@ server.tool(
     return {
       content: [{ type: 'text', text: formattedResult }],
     };
+  },
+  {
+    description: `Runs the Rust linter (Clippy) on the project.
+    Clippy provides lint checks that catch common mistakes and improve your Rust code.
+    It offers suggestions beyond what the compiler checks, focusing on code quality and best practices.
+    The --fix option automatically applies suggested fixes when possible.
+    Use this tool to find and fix potential issues in Rust code that wouldn't be caught by the compiler.`
   }
 );
 
@@ -168,6 +206,12 @@ server.tool(
     return {
       content: [{ type: 'text', text: formattedResult }],
     };
+  },
+  {
+    description: `Adds a dependency to a Rust project's Cargo.toml file.
+    This command intelligently adds and installs dependencies to the project.
+    Use the --dev flag to add a dependency that's only needed during development (not in production).
+    This is useful when you need to add a new library to a project without manually editing the Cargo.toml file.`
   }
 );
 
