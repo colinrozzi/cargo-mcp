@@ -272,31 +272,6 @@ server.tool(
   }
 );
 
-// Add cargo update tool
-server.tool(
-  'update',
-  `Updates dependencies in a Rust project's Cargo.toml file.
-  This command updates all dependencies in the project to their latest versions.
-  Use the --precise flag to specify a version to update to.
-
-  Note: This command updates all dependencies in the project, including those that are not specified in the command.`,
-  {
-    path: z.string().describe('Path to the Rust project directory'),
-    precise: z.string().optional().describe('Update to a specific version'),
-  },
-  async ({ path, precise }: { path: string, precise?: string }) => {
-    const args: string[] = [];
-    if (precise) args.push(`--precise=${precise}`);
-    
-    const result = await runCargoCommand('update', args, path);
-    const formattedResult = formatCommandResult(result);
-    
-    return {
-      content: [{ type: 'text', text: formattedResult }],
-    };
-  }
-);
-
 // Start the server with stdio transport
 const transport = new StdioServerTransport();
 
