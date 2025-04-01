@@ -11,7 +11,7 @@ const server = new McpServer({
 });
 
 // Helper function to get command args based on common parameters
-function getCommonArgs(params: { release?: boolean; verbose?: boolean }) {
+function getCommonArgs(params: { release?: boolean; verbose?: boolean }): string[] {
   const args: string[] = [];
   if (params.release) args.push('--release');
   if (params.verbose) args.push('--verbose');
@@ -21,13 +21,13 @@ function getCommonArgs(params: { release?: boolean; verbose?: boolean }) {
 // Add cargo build tool
 server.tool(
   'build',
-  z.object({
+  {
     path: z.string().describe('Path to the Rust project directory'),
     release: z.boolean().default(false).describe('Build in release mode'),
     verbose: z.boolean().default(false).describe('Use verbose output'),
     target: z.string().optional().describe('Target triple to build for'),
     features: z.array(z.string()).optional().describe('Features to enable'),
-  }),
+  },
   async ({ path, release, verbose, target, features }) => {
     let args = getCommonArgs({ release, verbose });
     
@@ -54,12 +54,12 @@ server.tool(
 // Add cargo run tool
 server.tool(
   'run',
-  z.object({
+  {
     path: z.string().describe('Path to the Rust project directory'),
     release: z.boolean().default(false).describe('Build in release mode'),
     verbose: z.boolean().default(false).describe('Use verbose output'),
     args: z.array(z.string()).default([]).describe('Arguments to pass to the binary'),
-  }),
+  },
   async ({ path, release, verbose, args }) => {
     let commandArgs = getCommonArgs({ release, verbose });
     if (args.length > 0) {
@@ -84,13 +84,13 @@ server.tool(
 // Add cargo test tool
 server.tool(
   'test',
-  z.object({
+  {
     path: z.string().describe('Path to the Rust project directory'),
     release: z.boolean().default(false).describe('Build in release mode'),
     verbose: z.boolean().default(false).describe('Use verbose output'),
     testName: z.string().optional().describe('Name of the test to run'),
     noCapture: z.boolean().default(false).describe('Show output of tests'),
-  }),
+  },
   async ({ path, release, verbose, testName, noCapture }) => {
     let args = getCommonArgs({ release, verbose });
     
@@ -116,11 +116,11 @@ server.tool(
 // Add cargo check tool
 server.tool(
   'check',
-  z.object({
+  {
     path: z.string().describe('Path to the Rust project directory'),
     release: z.boolean().default(false).describe('Build in release mode'),
     verbose: z.boolean().default(false).describe('Use verbose output'),
-  }),
+  },
   async ({ path, release, verbose }) => {
     const args = getCommonArgs({ release, verbose });
     const result = await runCargoCommand('check', args, path);
@@ -141,10 +141,10 @@ server.tool(
 // Add cargo fmt tool
 server.tool(
   'fmt',
-  z.object({
+  {
     path: z.string().describe('Path to the Rust project directory'),
     check: z.boolean().default(false).describe('Check if formatting is correct without modifying files'),
-  }),
+  },
   async ({ path, check }) => {
     const args = check ? ['--check'] : [];
     const result = await runCargoCommand('fmt', args, path);
@@ -165,12 +165,12 @@ server.tool(
 // Add cargo clippy tool
 server.tool(
   'clippy',
-  z.object({
+  {
     path: z.string().describe('Path to the Rust project directory'),
     release: z.boolean().default(false).describe('Build in release mode'),
     verbose: z.boolean().default(false).describe('Use verbose output'),
     fix: z.boolean().default(false).describe('Automatically apply lint suggestions'),
-  }),
+  },
   async ({ path, release, verbose, fix }) => {
     let args = getCommonArgs({ release, verbose });
     if (fix) args.push('--fix');
@@ -194,11 +194,11 @@ server.tool(
 // Add cargo add tool
 server.tool(
   'add',
-  z.object({
+  {
     path: z.string().describe('Path to the Rust project directory'),
     dependencies: z.array(z.string()).describe('Dependencies to add'),
     dev: z.boolean().default(false).describe('Add as development dependency'),
-  }),
+  },
   async ({ path, dependencies, dev }) => {
     const args = [...dependencies];
     if (dev) args.unshift('--dev');
