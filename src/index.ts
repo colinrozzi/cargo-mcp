@@ -51,7 +51,7 @@ server.tool(
 
 // Add cargo run tool
 server.tool(
-  'run',
+  'cargo-run',
   `Compiles and runs the current Rust project.
   This command builds the project and then immediately executes the resulting binary.
   Any additional arguments after '--' are passed to the binary when it's run.
