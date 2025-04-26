@@ -49,34 +49,6 @@ server.tool(
   }
 );
 
-// Add cargo run tool
-server.tool(
-  'cargo-run',
-  `Compiles and runs the current Rust project.
-  This command builds the project and then immediately executes the resulting binary.
-  Any additional arguments after '--' are passed to the binary when it's run.
-  Use this tool when you want to build and execute a Rust project in one step.`,
-  {
-    path: z.string().describe('Path to the Rust project directory'),
-    release: z.boolean().default(false).describe('Build in release mode'),
-    verbose: z.boolean().default(false).describe('Use verbose output'),
-    args: z.array(z.string()).default([]).describe('Arguments to pass to the binary'),
-  },
-  async ({ path, release, verbose, args }: { path: string, release: boolean, verbose: boolean, args: string[] }) => {
-    let commandArgs = getCommonArgs({ release, verbose });
-    if (args.length > 0) {
-      commandArgs = [...commandArgs, '--', ...args];
-    }
-    
-    const result = await runCargoCommand('run', commandArgs, path);
-    const formattedResult = formatCommandResult(result);
-    
-    return {
-      content: [{ type: 'text', text: formattedResult }],
-    };
-  }
-);
-
 // Add cargo test tool
 server.tool(
   'test',
@@ -130,54 +102,6 @@ server.tool(
   }
 );
 
-// Add cargo fmt tool
-server.tool(
-  'fmt',
-  `Formats Rust source code according to the official style guidelines.
-  This command uses rustfmt to automatically format all code in the project.
-  When run with the --check option, it reports formatting errors without modifying files.
-  Use this tool to ensure code follows consistent Rust style conventions.`,
-  {
-    path: z.string().describe('Path to the Rust project directory'),
-    check: z.boolean().default(false).describe('Check if formatting is correct without modifying files'),
-  },
-  async ({ path, check }: { path: string, check: boolean }) => {
-    const args = check ? ['--check'] : [];
-    const result = await runCargoCommand('fmt', args, path);
-    const formattedResult = formatCommandResult(result);
-    
-    return {
-      content: [{ type: 'text', text: formattedResult }],
-    };
-  }
-);
-
-// Add cargo clippy tool
-server.tool(
-  'clippy',
-  `Runs the Rust linter (Clippy) on the project.
-  Clippy provides lint checks that catch common mistakes and improve your Rust code.
-  It offers suggestions beyond what the compiler checks, focusing on code quality and best practices.
-  The --fix option automatically applies suggested fixes when possible.
-  Use this tool to find and fix potential issues in Rust code that wouldn't be caught by the compiler.`,
-  {
-    path: z.string().describe('Path to the Rust project directory'),
-    release: z.boolean().default(false).describe('Build in release mode'),
-    verbose: z.boolean().default(false).describe('Use verbose output'),
-    fix: z.boolean().default(false).describe('Automatically apply lint suggestions'),
-  },
-  async ({ path, release, verbose, fix }: { path: string, release: boolean, verbose: boolean, fix: boolean }) => {
-    let args = getCommonArgs({ release, verbose });
-    if (fix) args.push('--fix');
-    
-    const result = await runCargoCommand('clippy', args, path);
-    const formattedResult = formatCommandResult(result);
-    
-    return {
-      content: [{ type: 'text', text: formattedResult }],
-    };
-  }
-);
 
 // Add cargo add tool
 server.tool(
